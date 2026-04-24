@@ -2,7 +2,7 @@ use java
 go 
 create table account (
    useId int identity(1,1) primary key,
-   useName nvarchar(255) not null,
+   useName nvarchar(255) not null unique ,
    password nvarchar(255) not null,
    fullName varchar(255) not null ,
    role bit default 0
