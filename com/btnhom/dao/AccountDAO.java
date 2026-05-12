@@ -31,4 +31,37 @@ public class AccountDAO {
 	return null;
 	
 }
+	public boolean register(Account acc) {
+	    
+	    String sql = "INSERT INTO account (useName, password, fullName, role) VALUES (?, ?, ?, 1)";
+	    try (Connection con = DBContext.getConnection();
+	         PreparedStatement ps = con.prepareStatement(sql)) {
+	        
+	        ps.setString(1, acc.getUseName());
+	        ps.setString(2, acc.getPassWord());
+	        ps.setString(3, acc.getFullName());
+	        
+	        return ps.executeUpdate() > 0;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
+	public boolean isExisted(String username) {
+	    String sql = "SELECT COUNT(*) FROM account WHERE useName = ?";
+	    try (Connection con = DBContext.getConnection();
+	         PreparedStatement ps = con.prepareStatement(sql)) {
+	        
+	        ps.setString(1, username);
+	        try (ResultSet rs = ps.executeQuery()) {
+	            if (rs.next()) {
+	                // Nếu COUNT > 0 nghĩa là đã tồn tại
+	                return rs.getInt(1) > 0;
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
 	}

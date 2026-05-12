@@ -3,7 +3,6 @@ package com.btnhom.view;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.event.ActionListener;
 
 import com.btnhom.dao.*;
 import com.btnhom.entity.*;
@@ -64,6 +63,23 @@ public class GUI extends JFrame {
                 performLogin();
             }
         });
+        btnRegister.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// 1. Khởi tạo đối tượng màn hình Đăng ký
+		        RegisterGUI registerFrame = new RegisterGUI();
+		        
+		        // 2. Hiển thị màn hình Đăng ký
+		        registerFrame.setVisible(true);
+		        
+		    
+		        
+		        // 4. Ẩn màn hình Đăng nhập hiện tại đi
+		       
+		       setVisible(false);
+			}
+		});
         pnlButtons.add(btnLogin);
         pnlButtons.add(btnRegister);
         
