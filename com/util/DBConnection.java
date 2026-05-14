@@ -1,7 +1,8 @@
-package com.btnhom.utils;
+package com.util;
+
 import java.sql.*;
 
-public class DBContext {
+public class DBConnection{
       public static Connection getConnection() throws Exception{
     	  String url = "jdbc:sqlserver://localhost:1433;databaseName=java;encrypt=true;trustServerCertificate=true;";
           String user = "sa";
