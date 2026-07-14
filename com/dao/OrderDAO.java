@@ -75,7 +75,7 @@ public class OrderDAO {
 
     public double getDailyRevenue() {
         // SQL Server dùng GETDATE() và CAST AS DATE
-        String sql = "SELECT SUM(priceTotal) FROM orders WHERE CAST(orderDate AS DATE) = CAST(GETDATE() AS DATE)";
+        String sql = "SELECT SUM(priceTotal) FROM orders WHERE DATE(orderDate) = CURDATE()";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
@@ -85,7 +85,7 @@ public class OrderDAO {
     }
     public double getMonthlyRevenue() {
         // SQL Server dùng hàm MONTH() và YEAR() giống MySQL nhưng so sánh với GETDATE()
-        String sql = "SELECT SUM(priceTotal) FROM orders WHERE MONTH(orderDate) = MONTH(GETDATE()) AND YEAR(orderDate) = YEAR(GETDATE())";
+        String sql = "SELECT SUM(priceTotal) FROM orders WHERE MONTH(orderDate) = MONTH(NOW()) AND YEAR(orderDate) = YEAR(NOW())";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
@@ -119,9 +119,9 @@ public class OrderDAO {
     	public LinkedHashMap<String, Double> getRevenueLast7Days() {
             LinkedHashMap<String, Double> map = new LinkedHashMap<>();
             // SQL Server dùng DATEADD và DATEDIFF
-            String sql = "SELECT CAST(orderDate AS DATE) as date, SUM(priceTotal) as total FROM orders " +
-                         "WHERE orderDate >= DATEADD(day, -6, CAST(GETDATE() AS DATE)) " +
-                         "GROUP BY CAST(orderDate AS DATE) ORDER BY date ASC";
+            String sql = "SELECT DATE(orderDate) as date, SUM(priceTotal) as total FROM orders " +
+                         "WHERE orderDate >= DATE_SUB(CURDATE(), INTERVAL 6 DAY) " +
+                         "GROUP BY DATE(orderDate) ORDER BY date ASC";
             try (Connection conn = DBConnection.getConnection();
                  PreparedStatement ps = conn.prepareStatement(sql)) {
                 ResultSet rs = ps.executeQuery();
@@ -135,9 +135,9 @@ public class OrderDAO {
     	public LinkedHashMap<String, Double> getRevenueLast6Months() {
             LinkedHashMap<String, Double> map = new LinkedHashMap<>();
             // SQL Server dùng FORMAT(date, 'yyyy-MM')
-            String sql = "SELECT FORMAT(orderDate, 'yyyy-MM') as month, SUM(priceTotal) as total FROM orders " +
-                         "WHERE orderDate >= DATEADD(month, -5, CAST(GETDATE() AS DATE)) " +
-                         "GROUP BY FORMAT(orderDate, 'yyyy-MM') ORDER BY month ASC";
+            String sql = "SELECT DATE_FORMAT(orderDate, '%Y-%m') as month, SUM(priceTotal) as total FROM orders " +
+                         "WHERE orderDate >= DATE_SUB(CURDATE(), INTERVAL 5 MONTH) " +
+                         "GROUP BY month ORDER BY month ASC";
             try (Connection conn = DBConnection.getConnection();
                  PreparedStatement ps = conn.prepareStatement(sql)) {
                 ResultSet rs = ps.executeQuery();
@@ -151,9 +151,9 @@ public class OrderDAO {
         public List<Object[]> getTopSellingProducts() {
             List<Object[]> list = new ArrayList<>();
             // SQL Server dùng SELECT TOP 5 thay vì LIMIT 5
-            String sql = "SELECT TOP 5 p.productName, SUM(d.quantity) as totalQty, SUM(d.quantity * d.priceAtSale) as totalRev " +
+            String sql = "SELECT p.productName, SUM(d.quantity) as totalQty, SUM(d.quantity * d.priceAtSale) as totalRev " +
                          "FROM detailorder d JOIN products p ON d.productId = p.productId " +
-                         "GROUP BY p.productId, p.productName ORDER BY totalQty DESC";
+                         "GROUP BY p.productId, p.productName ORDER BY totalQty DESC LIMIT 5";
             try (Connection conn = DBConnection.getConnection();
                  PreparedStatement ps = conn.prepareStatement(sql)) {
                 ResultSet rs = ps.executeQuery();
@@ -165,7 +165,7 @@ public class OrderDAO {
         }
 
         public int getTotalOrdersToday() {
-            String sql = "SELECT COUNT(*) FROM orders WHERE CAST(orderDate AS DATE) = CAST(GETDATE() AS DATE)";
+            String sql = "SELECT COUNT(*) FROM orders WHERE DATE(orderDate) = CURDATE()";
             try (Connection conn = DBConnection.getConnection();
                  PreparedStatement ps = conn.prepareStatement(sql)) {
                 ResultSet rs = ps.executeQuery();

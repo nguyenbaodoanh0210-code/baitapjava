@@ -1,38 +1,41 @@
-use java 
-go 
-create table account (
-   useId int identity(1,1) primary key,
-   useName nvarchar(255) not null unique ,
-   password nvarchar(255) not null,
-   fullName varchar(255) not null ,
-   role bit default 0
+CREATE DATABASE IF NOT EXISTS fastfood_db;
+USE fastfood_db;
 
+CREATE TABLE account (
+    useId INT AUTO_INCREMENT PRIMARY KEY,
+    useName VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    fullName VARCHAR(255) NOT NULL,
+    role TINYINT(1) DEFAULT 0
 );
-create table categories (
-    categoryId int identity(1,1) primary key,
-    categoryName nvarchar(255) not null,
-);
-create table products (
-    productId int identity(1,1) primary key,
-    productName nvarchar(255) not null,
-    price decimal(18,2) not null,
-    categoryId int ,
-    foreign key (categoryId) references Categories(categoryId)
-);
-create table  orders(
-     orderId int identity(1,1) primary key,
-     orderDate datetime default getDate(),
-     priceTotal decimal(18,2) not null ,
-     useId int ,
-     foreign key (useId) references account(useId)
 
+CREATE TABLE categories (
+    categoryId INT AUTO_INCREMENT PRIMARY KEY,
+    categoryName VARCHAR(255) NOT NULL
 );
-create table detailOrder(
-      id int identity(1,1) primary key,
-      productId int,
-      orderId int ,
-      quantity int not null,
-      priceAtSale decimal(18,2),
-      foreign key (productId) references products(productId),
-      foreign key (orderId) references Orders(orderId)
-    );
+
+CREATE TABLE products (
+    productId INT AUTO_INCREMENT PRIMARY KEY,
+    productName VARCHAR(255) NOT NULL,
+    price DECIMAL(18,2) NOT NULL,
+    categoryId INT,
+    FOREIGN KEY (categoryId) REFERENCES categories(categoryId)
+);
+
+CREATE TABLE orders (
+    orderId INT AUTO_INCREMENT PRIMARY KEY,
+    orderDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    priceTotal DECIMAL(18,2) NOT NULL,
+    useId INT,
+    FOREIGN KEY (useId) REFERENCES account(useId)
+);
+
+CREATE TABLE detailOrder (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    productId INT,
+    orderId INT,
+    quantity INT NOT NULL,
+    priceAtSale DECIMAL(18,2),
+    FOREIGN KEY (productId) REFERENCES products(productId),
+    FOREIGN KEY (orderId) REFERENCES orders(orderId)
+);
